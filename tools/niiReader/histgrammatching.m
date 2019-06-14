@@ -1,0 +1,22 @@
+%histgrammatching;
+function histgrammatching(sourfn,reffn,outfn)
+    tarni=load_untouch_nii(reffn);
+    refImg=tarni.img;
+    tl=sort(refImg(:));sz_tl=size(tl,1);
+    mn=5;
+    
+    sorni=load_untouch_nii(sourfn);
+    sorimg=sorni.img;
+    sl=sort(sorimg(:));sz_sl=size(sl,1);
+    x_sl=[];y_tl=[];
+    for c_mn=1:mn
+        x_sl(end+1)=sl(int32((0.02+c_mn*0.96/mn)*sz_sl));
+        y_tl(end+1)=tl(int32((0.02+c_mn*0.96/mn)*sz_tl));
+    end
+    map_p = polyfit(x_sl,y_tl,2);
+    y_map = polyval(map_p,sorimg(:));
+    sorimg(:)=y_map(:);
+    
+    sorni.img=sorimg;
+    save_untouch_nii(sorni,outfn);
+    
